@@ -59,18 +59,30 @@ public class Main {
     public static List<Integer> random() {
         Random r = new Random();
 
-        // TODO
+//        for (int i = 0; i < 10; i++) {
+//            randomIntegers.add(r.nextInt(10));
+//        }
+//
+//        List<Integer> returnList = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//            if (randomIntegers.get(i) % 2 == 0) {
+//                returnList.add(randomIntegers.get(i) * randomIntegers.get(i));
+//            }
+//        }
+        // Create a List to store Integers
         List<Integer> randomIntegers = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            randomIntegers.add(r.nextInt(10));
-        }
 
+        // Convert Random Object to give a list of Streams
+        randomIntegers = r.ints(0, 10).limit(10).boxed().toList();
+
+        // Create a list to store all the return values
         List<Integer> returnList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            if (randomIntegers.get(i) % 2 == 0) {
-                returnList.add(randomIntegers.get(i) * randomIntegers.get(i));
-            }
-        }
+
+
+        returnList = randomIntegers.stream()
+            .filter(number -> number % 2 == 0)
+            .map(num -> num * num)
+            .toList();
 
         return returnList;
     }
