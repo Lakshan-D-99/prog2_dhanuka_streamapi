@@ -1,12 +1,14 @@
 package streamapi;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/** Starter for the stream api task. */
+/**
+ * Starter for the stream api task.
+ */
 public class Main {
     /**
      * And go.
@@ -22,8 +24,9 @@ public class Main {
         // Task III: Random
 
         // Task IV+V: Resources
-        System.out.println(resources("file.txt"));
+        System.out.println(resources("streamapi/file.txt"));
     }
+
 
     /**
      * Task I: Students.
@@ -73,9 +76,24 @@ public class Main {
      * @return An open {@link InputStream} for the resource file
      */
     private static InputStream getResourceAsStream(String path) {
-        // TODO
-        throw new UnsupportedOperationException();
+        // Check if the File exists
+        if (!path.isEmpty()) {
+            File file = null;
+            InputStream inputStream = null;
+            try {
+                file = new File(ClassLoader.getSystemResource(path).toURI());
+                inputStream = new FileInputStream(file);
+                return inputStream;
+            } catch (URISyntaxException | FileNotFoundException e) {
+                System.out.println(path + " does not exists");
+                throw new RuntimeException(e);
+            }
+
+
+        }
+        return null;
     }
+
 
     /**
      * Task V: Read resources.
@@ -88,31 +106,59 @@ public class Main {
      * @return String of all matching lines, separated by {@code "\n"}
      */
     public static String resources(String path) {
-        // TODO
-        StringBuilder result = new StringBuilder();
+//        StringBuilder result = new StringBuilder();
+//
+//        try (InputStream stream = getResourceAsStream(path)) {
+//            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+//
+//            List<String> allLines = new ArrayList<>();
+//
+//            String newLine = r.readLine();
+//            while (newLine != null) {
+//                allLines.add(newLine);
+//                newLine = r.readLine();
+//            }
+//
+//            for (int i = 1; i < allLines.size(); i++) {
+//                String s = allLines.get(i);
+//                if (s.startsWith("a") && !(s.length() < 2)) {
+//                    result.append(allLines.get(i)).append("\n");
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            System.err.println("Ouch, that didn't work: \n" + e.getMessage());
+//        }
+//
+//        return result.toString();
+//        }
+        // Check if the Path exists to read the file data
+        if (!path.isEmpty()) {
 
-        try (InputStream stream = getResourceAsStream(path)) {
-            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+            InputStream fileData = null;
+            InputStreamReader readData = null;
+            BufferedReader bufferedReader = null;
 
-            List<String> allLines = new ArrayList<>();
+            try {
+                // We need an Inputstream Variable to store our data
+                fileData = getResourceAsStream(path);
 
-            String newLine = r.readLine();
-            while (newLine != null) {
-                allLines.add(newLine);
-                newLine = r.readLine();
+                readData = new InputStreamReader(fileData);
+
+                // Now we need to create a BufferReader, so that the BufferReader can read all the File Data
+                bufferedReader = new BufferedReader(readData);
+
+                return bufferedReader.lines()
+                    .filter(s -> s.startsWith("a") && !(s.length() < 2))
+                    .collect(Collectors.joining("\n"));
+
+            } catch (RuntimeException e) {
+                return e.getMessage().toString();
             }
 
-            for (int i = 1; i < allLines.size(); i++) {
-                String s = allLines.get(i);
-                if (s.startsWith("a") && !(s.length() < 2)) {
-                    result.append(allLines.get(i)).append("\n");
-                }
-            }
-
-        } catch (IOException e) {
-            System.err.println("Ouch, that didn't work: \n" + e.getMessage());
+        } else {
+            return "Please provide a Path to a file";
         }
-
-        return result.toString();
     }
+
 }
